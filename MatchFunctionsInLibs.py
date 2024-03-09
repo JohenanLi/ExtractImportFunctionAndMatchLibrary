@@ -11,11 +11,11 @@ def get_shared_libraries(binary_path):
         print(f"Error while processing {binary_path}")
         return []
 
-def match_functions(lib_path, import_table, libraries):
+def match_functions(lib_path, all_function_name, libraries):
     matched = {}
     unmatched = []
 
-    for func in import_table:
+    for func in all_function_name:
         found = False
         for lib in libraries:
             so_file = os.path.join(lib_path, lib)
@@ -33,19 +33,19 @@ def match_functions(lib_path, import_table, libraries):
 
     return matched, unmatched
 
-def read_import_table(file_path):
+def read_all_function_name(file_path):
     with open(file_path, 'r') as f:
-        return [line.strip().split(',')[1] for line in f]
+        return [line.strip() for line in f]
 
 if __name__ == '__main__':
     binary_path = '/home/minipython/reproduce_cve/_US_AC15V1.0BR_V15.03.05.19_multi_TD01.bin.extracted/squashfs-root/bin/httpd'
     lib_path = '/home/minipython/reproduce_cve/_US_AC15V1.0BR_V15.03.05.19_multi_TD01.bin.extracted/squashfs-root/lib'
 
-    import_table_path = "/mnt/d/code_proj/BinaryAnalysisiTool/import_table.txt"
-    import_table = read_import_table(import_table_path)
-    print(import_table)
+    all_function_name_path = "/mnt/d/code_proj/BinaryAnalysisiTool/all_function_name.txt"
+    all_function_name = read_all_function_name(all_function_name_path)
+    print(all_function_name)
     libraries = get_shared_libraries(binary_path)
-    matched, unmatched = match_functions(lib_path, import_table, libraries)
+    matched, unmatched = match_functions(lib_path, all_function_name, libraries)
 
     with open('matched_functions.txt', 'w') as f:
         for func, lib in matched.items():
